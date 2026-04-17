@@ -9,6 +9,7 @@
 library(INLA)
 library(xdtkit)
 library(jsonlite)
+source("serious-testing/scripts_inla_sensor_placement.R")
 
 year <- 2024
 
@@ -25,7 +26,7 @@ preprocessed_traffic_links_norway <- preprocess_traffic_links(norway_directed_tr
 stops_on_traffic_links_norway <- read.csv(paste0("data/trafikklenker_med_holdeplasser_", year, ".csv"))
 bus_counts_norway <- read.csv(paste0("data/holdeplasspasseringer_entur_", year, ".csv"))
 
-bus_aadt_norway <- calculate_bus_aadt(stops_on_traffic_links_norway, bus_counts, year = year)
+bus_aadt_norway <- calculate_bus_aadt(stops_on_traffic_links_norway, bus_counts_norway, year = year)
 
 prepared_traffic_links_norway <- fill_missing_values(
   df = preprocessed_traffic_links_norway,
@@ -55,7 +56,6 @@ covariates <- ~ functionalRoadClass:maxLanes +
   hasOnlyPublicTransportLanes +
   functionalRoadClass*isRamp +
   lastYearAadt_logAadt
-#covariates <- ~ maxLanes + hasOnlyPublicTransportLanes + functionalRoadClass + lastYearAadt_logAadt
 
 inla_model_norway <- fit_inla_model(
   data = prepared_traffic_links_norway,
@@ -85,29 +85,23 @@ inla_model_norway_test <- fit_inla_model(
   iid_effects = "roadSystem",
   family = "nbinomial")
 
-source("serious-testing/scripts_inla_sensor_placement.R")
-
 ordinal_levels_road <- list(
-  functionalRoadClass = as.character(c(7, 6, 5, 4, 3, 2, 1, 0)),
-  roadCategory        = c("KOMMUNAL_VEG", "FYLKESVEG", "RIKSVEG", "EUROPAVEG")
+  functionClass       = c("unknown", "E", "D", "C", "B", "A"),
+  highestSpeedLimit   = c("unknown","20", "30", "40", "50", "60", "70", "80", "90", "100", "110")
 )
-
+#Best similarity covariates
 similarity_covariates_norway <- c(
-  "maxLanes", "minLanes",
-  "highestSpeedLimit", "lowestSpeedLimit",
-  "hasOnlyPublicTransportLanes", "isRamp",
-  "roadCategory", "functionalRoadClass", "roadSystem",
+  "minLanes", "highestSpeedLimit", "functionClass",
   "lastYearAadt_logAadt"
 )
-
 inla_rbf_norway <- fit_inla_rbf_model(
   data                  = data_cv_norway,
   adjacency_matrix      = adjacency_matrix_norway,
   spatial_term          = "besagproper_rbf",
-  fixed_effects         = ~ functionalRoadClass + roadCategory + functionalRoadClass*isRamp + hasOnlyPublicTransportLanes + maxLanes + minLanes + lastYearAadt_logAadt,
+  fixed_effects         = covariates,
   iid_effects           = "roadSystem",
   ordinal_levels        = ordinal_levels_road,
-  similarity_covariates = c("lastYearAadt_logAadt", "functionalRoadClass", "roadCategory"),
+  similarity_covariates = similarity_covariates_norway,
   family                = "nbinomial")
 
 # ── Diagnostic plots ──────────────────────────────────────────────────────────
@@ -135,3 +129,19 @@ metrics_norway <- data.frame(
   MAPE  = c(.mape(pred_besag[nonzero],  true_aadt_norway[nonzero]),.mape(pred_rbf[nonzero],  true_aadt_norway[nonzero]))
 )
 print(metrics_norway, digits = 4, row.names = FALSE)
+
+
+# Run this to verify that the currect similarity covariates are the best. Takes ~ 1 day to run
+# sel_norway <- select_similarity_covariates(
+#   data = prepared_traffic_links_norway, 
+#   adjacency_matrix = adjacency_matrix_norway, 
+#   weight_fn = "gaussian"
+# )
+#The best similarity covariates were lastYearAadt_logAadt, functionClass, minLanes and highestSpeedLimit
+#The kfold cross validation MALE for this configuration was 0.0644
+best_similarity_covariates <- c("lastYearAadt_logAadt", "functionClass", "minLanes", "highestSpeedLimit")
+best_ordinal_covariates <- c("functionClass", "highestSpeedLimit")
+
+
+
+
