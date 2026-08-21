@@ -1,0 +1,87 @@
+---
+title: "Flow Conservation Functions"
+output: html_document
+---
+
+# Flow Conservation Functions
+
+Functions defined in `R/flow-conservation.R`.
+
+---
+
+## `identify_derivable_nodes()`
+
+Analyses the traffic network incidence matrix to identify which unmeasured links can be
+derived from flow-conservation equations, and which links — if measured — would unlock
+additional derivations.
+
+```r
+identify_derivable_nodes(
+  incidence_matrix,
+  traffic_links,
+  nodes            = NULL,
+  reliable_sources = c("Trafikkdata_continuous", "AutoPASS", "Derived")
+)
+```
+
+### Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `incidence_matrix` | sparse/dense matrix | From `build_incidence_matrix()`; rows are named flow nodes, columns are traffic link IDs |
+| `traffic_links` | data frame | Must contain `id`, `aadt`, and optionally `traffic_volume_source` |
+| `nodes` | data frame or NULL | Must contain `number_of_traffic_links` (from `identify_unbalanceable_nodes()`); `NULL` treats every incidence row as exact |
+| `reliable_sources` | character vector | `traffic_volume_source` values trusted enough to anchor flow conservation. `NULL` falls back to `is.na(aadt)` only |
+
+### How it works
+
+A link is "unmeasured" if `aadt` is `NA` OR its `traffic_volume_source` is not in
+`reliable_sources`. Each incidence row (flow node) is classified by its count of unmeasured
+links:
+
+| Row type | Unmeasured links | Consequence |
+|----------|-------------------|-------------|
+| **Derivable** | exactly 1 | That link's value follows directly from flow conservation — no sensor needed |
+| **Sensor-value (exact row)** | exactly 2, exact row, not same-road WITH/AGAINST pair | Measuring either link makes the other derivable |
+| **Approximate (excluded)** | 2, passthrough row at a 2-link node | Excluded — an unobserved diversion cannot be ruled out |
+
+**Row exactness**: a `_passthrough` row is *approximate* only when its node has exactly 2
+known traffic links (no other incidence row captures additional roads there). `_passthrough`
+rows at nodes with >2 links, and all `_mixing` rows, are *exact*. When `nodes = NULL`, every
+row is treated as exact (backward-compatible).
+
+### Columns added to `traffic_links`
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `derivable` | logical | `TRUE` if this unmeasured link is already derivable from existing measurements |
+| `n_derivable` | integer | Number of flow nodes for which this link is the sole unknown |
+| `derivable_flow_nodes` | list | Flow node names for which this link is the sole unknown |
+| `enables_derivable_links` | list | Link IDs that become derivable if this link is measured |
+| `n_enables_derivable` | integer | Count of `enables_derivable_links` |
+| `enables_derivable` | logical | `TRUE` if measuring this link enables at least one derivation |
+
+### Returns
+
+The input `traffic_links` data frame with the six columns above appended.
+
+---
+
+## Usage in the pipeline
+
+`enables_derivable_links` feeds `greedy_mi_sensor_selection_derivable()` (bundle-scoring
+mode of `greedy_mi_sensor_selection_norway(..., bundle_scoring = TRUE)`), where each
+candidate sensor's score includes the MI gain from every link its placement would derive
+via flow conservation, not just the sensor link itself.
+
+```r
+# Exclude already-derivable links from the candidate set
+data_filtered <- data_with_derivable |>
+  dplyr::filter(!derivable)
+
+# Or give bonus weight to links that unlock derivations
+data_filtered <- data_with_derivable |>
+  dplyr::mutate(
+    derivable_bonus = dplyr::if_else(enables_derivable, 1.5, 1.0)
+  )
+```

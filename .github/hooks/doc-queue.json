@@ -1,0 +1,10 @@
+{
+  "postToolUse": [
+    {
+      "name": "Track modified R files for doc review",
+      "matchTool": "write_file",
+      "matchPattern": ".*\\.R$",
+      "command": "echo \"$FILE\" >> .github/doc-review-queue.txt"
+    }
+  ]
+}

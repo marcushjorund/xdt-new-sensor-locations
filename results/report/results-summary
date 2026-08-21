@@ -1,0 +1,1098 @@
+norway_unweighted$summary
+$counts_table
+             covariate           level  n pct
+1  functionalRoadClass               0  7   7
+2  functionalRoadClass               1  4   4
+3  functionalRoadClass               3 19  19
+4  functionalRoadClass               4 26  26
+5  functionalRoadClass               5 38  38
+6  functionalRoadClass               6  6   6
+7        functionClass               A 11  11
+8        functionClass               B 10  10
+9        functionClass               C 29  29
+10       functionClass               D 15  15
+11       functionClass               E 34  34
+12       functionClass         unknown  1   1
+13        roadCategory       EUROPAVEG  6   6
+14        roadCategory       FYLKESVEG 71  71
+15        roadCategory    KOMMUNAL_VEG 18  18
+16        roadCategory         RIKSVEG  5   5
+17              county           Agder  8   8
+18              county        Akershus  2   2
+19              county        Buskerud  3   3
+20              county        Finnmark  3   3
+21              county       Innlandet  5   5
+22              county Møre og Romsdal  2   2
+23              county        Nordland 13  13
+24              county            Oslo 18  18
+25              county         Østfold  6   6
+26              county        Rogaland  8   8
+27              county           Troms  5   5
+28              county       Trøndelag  8   8
+29              county        Vestfold  4   4
+30              county        Vestland 15  15
+31       aadt_category             Low 37  37
+32       aadt_category          Medium  8   8
+33       aadt_category        Very Low 55  55
+
+$n_selected
+[1] 100
+
+$parameters
+$parameters$r
+[1] 100
+
+$parameters$k
+[1] 100
+
+$parameters$hops
+[1] 3
+
+$parameters$weighting_vars
+NULL
+
+$parameters$weighting_vars_alpha
+NULL
+
+$parameters$neighbourhood_decay
+[1] 1.00 0.50 0.25
+
+$parameters$neighbour_hops
+[1] 2
+
+$parameters$bundle_scoring
+[1] FALSE
+
+$parameters$filtering
+NULL
+
+
+$enables_derivable_count
+[1] 4
+
+$total_derivable_links_enabled
+[1] 0
+
+> norway_unweighted$summary$counts_table
+             covariate           level  n pct
+1  functionalRoadClass               0  7   7
+2  functionalRoadClass               1  4   4
+3  functionalRoadClass               3 19  19
+4  functionalRoadClass               4 26  26
+5  functionalRoadClass               5 38  38
+6  functionalRoadClass               6  6   6
+7        functionClass               A 11  11
+8        functionClass               B 10  10
+9        functionClass               C 29  29
+10       functionClass               D 15  15
+11       functionClass               E 34  34
+12       functionClass         unknown  1   1
+13        roadCategory       EUROPAVEG  6   6
+14        roadCategory       FYLKESVEG 71  71
+15        roadCategory    KOMMUNAL_VEG 18  18
+16        roadCategory         RIKSVEG  5   5
+17              county           Agder  8   8
+18              county        Akershus  2   2
+19              county        Buskerud  3   3
+20              county        Finnmark  3   3
+21              county       Innlandet  5   5
+22              county Møre og Romsdal  2   2
+23              county        Nordland 13  13
+24              county            Oslo 18  18
+25              county         Østfold  6   6
+26              county        Rogaland  8   8
+27              county           Troms  5   5
+28              county       Trøndelag  8   8
+29              county        Vestfold  4   4
+30              county        Vestland 15  15
+31       aadt_category             Low 37  37
+32       aadt_category          Medium  8   8
+33       aadt_category        Very Low 55  55
+> trondelag_unweighted$summary
+$counts_table
+             covariate     level  n pct
+1  functionalRoadClass         0  2  10
+2  functionalRoadClass         2  1   5
+3  functionalRoadClass         3  5  25
+4  functionalRoadClass         4  4  20
+5  functionalRoadClass         5  8  40
+6        functionClass         A  3  15
+7        functionClass         B  3  15
+8        functionClass         C  2  10
+9        functionClass         D  1   5
+10       functionClass         E 11  55
+11        roadCategory EUROPAVEG  2  10
+12        roadCategory FYLKESVEG 17  85
+13        roadCategory   RIKSVEG  1   5
+14              county Trøndelag 20 100
+15       aadt_category       Low  8  40
+16       aadt_category  Very Low 12  60
+
+$n_selected
+[1] 20
+
+$parameters
+$parameters$r
+[1] 20
+
+$parameters$k
+[1] 20
+
+$parameters$hops
+[1] 3
+
+$parameters$weighting_vars
+NULL
+
+$parameters$weighting_vars_alpha
+NULL
+
+$parameters$neighbourhood_decay
+[1] 1.00 0.50 0.25
+
+$parameters$neighbour_hops
+[1] 2
+
+$parameters$bundle_scoring
+[1] FALSE
+
+$parameters$filtering
+$parameters$filtering$county
+[1] "Trøndelag"
+
+
+
+$enables_derivable_count
+[1] 0
+
+$total_derivable_links_enabled
+[1] 1
+
+> trondelag_unweighted$summary$counts_table
+             covariate     level  n pct
+1  functionalRoadClass         0  2  10
+2  functionalRoadClass         2  1   5
+3  functionalRoadClass         3  5  25
+4  functionalRoadClass         4  4  20
+5  functionalRoadClass         5  8  40
+6        functionClass         A  3  15
+7        functionClass         B  3  15
+8        functionClass         C  2  10
+9        functionClass         D  1   5
+10       functionClass         E 11  55
+11        roadCategory EUROPAVEG  2  10
+12        roadCategory FYLKESVEG 17  85
+13        roadCategory   RIKSVEG  1   5
+14              county Trøndelag 20 100
+15       aadt_category       Low  8  40
+16       aadt_category  Very Low 12  60
+> norway_unweighted_derivable$summary
+$counts_table
+             covariate           level  n pct
+1  functionalRoadClass               0 84  84
+2  functionalRoadClass               1  7   7
+3  functionalRoadClass               2  6   6
+4  functionalRoadClass               3  3   3
+5        functionClass               A 96  96
+6        functionClass               B  1   1
+7        functionClass               C  3   3
+8         roadCategory       EUROPAVEG 80  80
+9         roadCategory       FYLKESVEG  3   3
+10        roadCategory         RIKSVEG 17  17
+11              county           Agder 16  16
+12              county        Akershus 11  11
+13              county        Buskerud  6   6
+14              county       Innlandet  8   8
+15              county Møre og Romsdal  2   2
+16              county            Oslo 15  15
+17              county         Østfold  9   9
+18              county        Rogaland  4   4
+19              county        Telemark  3   3
+20              county       Trøndelag 11  11
+21              county        Vestfold  7   7
+22              county        Vestland  8   8
+23       aadt_category            High 24  24
+24       aadt_category             Low 26  26
+25       aadt_category          Medium 47  47
+26       aadt_category       Very High  2   2
+27       aadt_category        Very Low  1   1
+
+$n_selected
+[1] 100
+
+$parameters
+$parameters$r
+[1] 100
+
+$parameters$k
+[1] 100
+
+$parameters$hops
+[1] 3
+
+$parameters$weighting_vars
+NULL
+
+$parameters$weighting_vars_alpha
+NULL
+
+$parameters$neighbourhood_decay
+[1] 1.00 0.50 0.25
+
+$parameters$neighbour_hops
+[1] 2
+
+$parameters$bundle_scoring
+[1] TRUE
+
+$parameters$filtering
+NULL
+
+
+$enables_derivable_count
+[1] 100
+
+$total_derivable_links_enabled
+[1] 0
+
+> norway_unweighted_derivable$summary$counts_table
+             covariate           level  n pct
+1  functionalRoadClass               0 84  84
+2  functionalRoadClass               1  7   7
+3  functionalRoadClass               2  6   6
+4  functionalRoadClass               3  3   3
+5        functionClass               A 96  96
+6        functionClass               B  1   1
+7        functionClass               C  3   3
+8         roadCategory       EUROPAVEG 80  80
+9         roadCategory       FYLKESVEG  3   3
+10        roadCategory         RIKSVEG 17  17
+11              county           Agder 16  16
+12              county        Akershus 11  11
+13              county        Buskerud  6   6
+14              county       Innlandet  8   8
+15              county Møre og Romsdal  2   2
+16              county            Oslo 15  15
+17              county         Østfold  9   9
+18              county        Rogaland  4   4
+19              county        Telemark  3   3
+20              county       Trøndelag 11  11
+21              county        Vestfold  7   7
+22              county        Vestland  8   8
+23       aadt_category            High 24  24
+24       aadt_category             Low 26  26
+25       aadt_category          Medium 47  47
+26       aadt_category       Very High  2   2
+27       aadt_category        Very Low  1   1
+> trondelag_unweighted_derivable$summary
+$counts_table
+             covariate     level  n pct
+1  functionalRoadClass         0 18  90
+2  functionalRoadClass         2  1   5
+3  functionalRoadClass         4  1   5
+4        functionClass         A 19  95
+5        functionClass         B  1   5
+6         roadCategory EUROPAVEG 18  90
+7         roadCategory FYLKESVEG  1   5
+8         roadCategory   RIKSVEG  1   5
+9               county Trøndelag 20 100
+10       aadt_category      High  4  20
+11       aadt_category       Low  3  15
+12       aadt_category    Medium 12  60
+13       aadt_category  Very Low  1   5
+
+$n_selected
+[1] 20
+
+$parameters
+$parameters$r
+[1] 20
+
+$parameters$k
+[1] 20
+
+$parameters$hops
+[1] 3
+
+$parameters$weighting_vars
+NULL
+
+$parameters$weighting_vars_alpha
+NULL
+
+$parameters$neighbourhood_decay
+[1] 1.00 0.50 0.25
+
+$parameters$neighbour_hops
+[1] 2
+
+$parameters$bundle_scoring
+[1] TRUE
+
+$parameters$filtering
+$parameters$filtering$county
+[1] "Trøndelag"
+
+
+
+$enables_derivable_count
+[1] 18
+
+$total_derivable_links_enabled
+[1] 0
+
+> trondelag_unweighted_derivable$summary$counts_table
+             covariate     level  n pct
+1  functionalRoadClass         0 18  90
+2  functionalRoadClass         2  1   5
+3  functionalRoadClass         4  1   5
+4        functionClass         A 19  95
+5        functionClass         B  1   5
+6         roadCategory EUROPAVEG 18  90
+7         roadCategory FYLKESVEG  1   5
+8         roadCategory   RIKSVEG  1   5
+9               county Trøndelag 20 100
+10       aadt_category      High  4  20
+11       aadt_category       Low  3  15
+12       aadt_category    Medium 12  60
+13       aadt_category  Very Low  1   5
+> norway_aadt_identity$summary
+$counts_table
+             covariate        level  n pct
+1  functionalRoadClass            0 86  86
+2  functionalRoadClass            2  4   4
+3  functionalRoadClass            3 10  10
+4        functionClass            A 90  90
+5        functionClass            C 10  10
+6         roadCategory    EUROPAVEG 82  82
+7         roadCategory KOMMUNAL_VEG 10  10
+8         roadCategory      RIKSVEG  8   8
+9               county        Agder  1   1
+10              county     Akershus 23  23
+11              county     Buskerud  4   4
+12              county         Oslo 51  51
+13              county      Østfold  3   3
+14              county     Rogaland  5   5
+15              county    Trøndelag  6   6
+16              county     Vestland  7   7
+17       aadt_category         High 68  68
+18       aadt_category          Low  2   2
+19       aadt_category       Medium  8   8
+20       aadt_category    Very High 22  22
+
+$n_selected
+[1] 100
+
+$parameters
+$parameters$r
+[1] 100
+
+$parameters$k
+[1] 100
+
+$parameters$hops
+[1] 3
+
+$parameters$weighting_vars
+$parameters$weighting_vars$inla_pred
+[1] "identity"
+
+
+$parameters$weighting_vars_alpha
+NULL
+
+$parameters$neighbourhood_decay
+[1] 1.000 0.500 0.250 0.125
+
+$parameters$neighbour_hops
+[1] 2
+
+$parameters$bundle_scoring
+[1] FALSE
+
+$parameters$filtering
+NULL
+
+
+$enables_derivable_count
+[1] 66
+
+$total_derivable_links_enabled
+[1] 4
+
+> norway_aadt_identity$summary$counts_table
+             covariate        level  n pct
+1  functionalRoadClass            0 86  86
+2  functionalRoadClass            2  4   4
+3  functionalRoadClass            3 10  10
+4        functionClass            A 90  90
+5        functionClass            C 10  10
+6         roadCategory    EUROPAVEG 82  82
+7         roadCategory KOMMUNAL_VEG 10  10
+8         roadCategory      RIKSVEG  8   8
+9               county        Agder  1   1
+10              county     Akershus 23  23
+11              county     Buskerud  4   4
+12              county         Oslo 51  51
+13              county      Østfold  3   3
+14              county     Rogaland  5   5
+15              county    Trøndelag  6   6
+16              county     Vestland  7   7
+17       aadt_category         High 68  68
+18       aadt_category          Low  2   2
+19       aadt_category       Medium  8   8
+20       aadt_category    Very High 22  22
+> 
+> saveRDS(norway_aadt_identity, "results/serious-results/norway_aadt_identity_100percounty_100overall.rds")
+> 
+> # ── Experiment 6: Trøndelag — AADT identity, k = 20 per county, r = 20 overall ─
+> trondelag_aadt_identity <- greedy_mi_sensor_selection_norway(
++   data                = prepared_traffic_links_norway,
++   adjacency_matrix    = adjacency_matrix_norway,
++   distances           = distances,
++   tau                 = tau,
++   d                   = d,
++   sigma               = sigma,
++   hops                = 3,
++   k                   = 20,
++   r                   = 20,
++   weighting_vars      = list(inla_pred = "identity"),
++   neighbourhood_decay  = c(1, 0.5,0.25,0.125),
++   neighbour_hops       = 2,
++   neighbourhood_scoring = "log_proportional",
++   filtering           = list(county = "Trøndelag")
++ )
+Filtering active: 4351 links eligible across 2301 base IDs.
+Active partitions (1/15): Trøndelag
+[13/15] Trøndelag
+Det oppstod 20 åtvaringar (bruk «warnings()» for å sjå dei)
+> 
+> plot_sensor_selection_map(trondelag_aadt_identity, all_data = prepared_traffic_links_norway[prepared_traffic_links_norway$county == "Trøndelag", ])
+> trondelag_aadt_identity$summary
+$counts_table
+             covariate     level  n pct
+1  functionalRoadClass         0 17  85
+2  functionalRoadClass         2  1   5
+3  functionalRoadClass         4  1   5
+4  functionalRoadClass         5  1   5
+5        functionClass         A 18  90
+6        functionClass         B  2  10
+7         roadCategory EUROPAVEG 17  85
+8         roadCategory FYLKESVEG  2  10
+9         roadCategory   RIKSVEG  1   5
+10              county Trøndelag 20 100
+11       aadt_category      High  8  40
+12       aadt_category    Medium 12  60
+
+$n_selected
+[1] 20
+
+$parameters
+$parameters$r
+[1] 20
+
+$parameters$k
+[1] 20
+
+$parameters$hops
+[1] 3
+
+$parameters$weighting_vars
+$parameters$weighting_vars$inla_pred
+[1] "identity"
+
+
+$parameters$weighting_vars_alpha
+NULL
+
+$parameters$neighbourhood_decay
+[1] 1.000 0.500 0.250 0.125
+
+$parameters$neighbour_hops
+[1] 2
+
+$parameters$bundle_scoring
+[1] FALSE
+
+$parameters$filtering
+$parameters$filtering$county
+[1] "Trøndelag"
+
+
+
+$enables_derivable_count
+[1] 14
+
+$total_derivable_links_enabled
+[1] 2
+
+> trondelag_aadt_identity$summary$counts_table
+             covariate     level  n pct
+1  functionalRoadClass         0 17  85
+2  functionalRoadClass         2  1   5
+3  functionalRoadClass         4  1   5
+4  functionalRoadClass         5  1   5
+5        functionClass         A 18  90
+6        functionClass         B  2  10
+7         roadCategory EUROPAVEG 17  85
+8         roadCategory FYLKESVEG  2  10
+9         roadCategory   RIKSVEG  1   5
+10              county Trøndelag 20 100
+11       aadt_category      High  8  40
+12       aadt_category    Medium 12  60
+> 
+> norway_aadt_logprop$summary
+$counts_table
+             covariate           level  n pct
+1  functionalRoadClass               0 68  68
+2  functionalRoadClass               1  8   8
+3  functionalRoadClass               2  4   4
+4  functionalRoadClass               3 13  13
+5  functionalRoadClass               4  6   6
+6  functionalRoadClass               5  1   1
+7        functionClass               A 80  80
+8        functionClass               B  9   9
+9        functionClass               C  8   8
+10       functionClass               D  3   3
+11        roadCategory       EUROPAVEG 66  66
+12        roadCategory       FYLKESVEG 18  18
+13        roadCategory    KOMMUNAL_VEG  2   2
+14        roadCategory         RIKSVEG 14  14
+15              county           Agder  7   7
+16              county        Akershus  1   1
+17              county        Buskerud  2   2
+18              county        Finnmark 18  18
+19              county       Innlandet 13  13
+20              county Møre og Romsdal  2   2
+21              county        Nordland  7   7
+22              county            Oslo  4   4
+23              county         Østfold  7   7
+24              county        Rogaland  7   7
+25              county        Telemark  1   1
+26              county           Troms  7   7
+27              county       Trøndelag  8   8
+28              county        Vestfold  7   7
+29              county        Vestland  9   9
+30       aadt_category            High 25  25
+31       aadt_category             Low 21  21
+32       aadt_category          Medium 51  51
+33       aadt_category       Very High  3   3
+
+$n_selected
+[1] 100
+
+$parameters
+$parameters$r
+[1] 100
+
+$parameters$k
+[1] 100
+
+$parameters$hops
+[1] 3
+
+$parameters$weighting_vars
+$parameters$weighting_vars$inla_pred
+[1] "log_proportional"
+
+
+$parameters$weighting_vars_alpha
+NULL
+
+$parameters$neighbourhood_decay
+[1] 1.000 0.500 0.250 0.125
+
+$parameters$neighbour_hops
+[1] 2
+
+$parameters$bundle_scoring
+[1] FALSE
+
+$parameters$filtering
+NULL
+
+
+$enables_derivable_count
+[1] 43
+
+$total_derivable_links_enabled
+[1] 0
+
+> norway_aadt_logprop$summary$counts_table
+             covariate           level  n pct
+1  functionalRoadClass               0 68  68
+2  functionalRoadClass               1  8   8
+3  functionalRoadClass               2  4   4
+4  functionalRoadClass               3 13  13
+5  functionalRoadClass               4  6   6
+6  functionalRoadClass               5  1   1
+7        functionClass               A 80  80
+8        functionClass               B  9   9
+9        functionClass               C  8   8
+10       functionClass               D  3   3
+11        roadCategory       EUROPAVEG 66  66
+12        roadCategory       FYLKESVEG 18  18
+13        roadCategory    KOMMUNAL_VEG  2   2
+14        roadCategory         RIKSVEG 14  14
+15              county           Agder  7   7
+16              county        Akershus  1   1
+17              county        Buskerud  2   2
+18              county        Finnmark 18  18
+19              county       Innlandet 13  13
+20              county Møre og Romsdal  2   2
+21              county        Nordland  7   7
+22              county            Oslo  4   4
+23              county         Østfold  7   7
+24              county        Rogaland  7   7
+25              county        Telemark  1   1
+26              county           Troms  7   7
+27              county       Trøndelag  8   8
+28              county        Vestfold  7   7
+29              county        Vestland  9   9
+30       aadt_category            High 25  25
+31       aadt_category             Low 21  21
+32       aadt_category          Medium 51  51
+33       aadt_category       Very High  3   3
+> trondelag_aadt_logprop$summary
+$counts_table
+             covariate     level  n pct
+1  functionalRoadClass         0 18  90
+2  functionalRoadClass         3  1   5
+3  functionalRoadClass         5  1   5
+4        functionClass         A 18  90
+5        functionClass         B  2  10
+6         roadCategory EUROPAVEG 18  90
+7         roadCategory FYLKESVEG  2  10
+8               county Trøndelag 20 100
+9        aadt_category      High  2  10
+10       aadt_category       Low  6  30
+11       aadt_category    Medium 11  55
+12       aadt_category  Very Low  1   5
+
+$n_selected
+[1] 20
+
+$parameters
+$parameters$r
+[1] 20
+
+$parameters$k
+[1] 20
+
+$parameters$hops
+[1] 3
+
+$parameters$weighting_vars
+$parameters$weighting_vars$inla_pred
+[1] "log_proportional"
+
+
+$parameters$weighting_vars_alpha
+NULL
+
+$parameters$neighbourhood_decay
+[1] 1.000 0.500 0.250 0.125
+
+$parameters$neighbour_hops
+[1] 2
+
+$parameters$bundle_scoring
+[1] FALSE
+
+$parameters$filtering
+$parameters$filtering$county
+[1] "Trøndelag"
+
+
+
+$enables_derivable_count
+[1] 11
+
+$total_derivable_links_enabled
+[1] 0
+
+> trondelag_aadt_logprop$summary$counts_table
+             covariate     level  n pct
+1  functionalRoadClass         0 18  90
+2  functionalRoadClass         3  1   5
+3  functionalRoadClass         5  1   5
+4        functionClass         A 18  90
+5        functionClass         B  2  10
+6         roadCategory EUROPAVEG 18  90
+7         roadCategory FYLKESVEG  2  10
+8               county Trøndelag 20 100
+9        aadt_category      High  2  10
+10       aadt_category       Low  6  30
+11       aadt_category    Medium 11  55
+12       aadt_category  Very Low  1   5
+> norway_fc_sqrt5to1$summary
+$counts_table
+             covariate           level  n pct
+1  functionalRoadClass               0 76  76
+2  functionalRoadClass               1 15  15
+3  functionalRoadClass               2  4   4
+4  functionalRoadClass               3  3   3
+5  functionalRoadClass               4  2   2
+6        functionClass               A 95  95
+7        functionClass               B  5   5
+8         roadCategory       EUROPAVEG 73  73
+9         roadCategory       FYLKESVEG  5   5
+10        roadCategory         RIKSVEG 22  22
+11              county           Agder  6   6
+12              county        Akershus  4   4
+13              county        Buskerud  7   7
+14              county        Finnmark  8   8
+15              county       Innlandet 13  13
+16              county Møre og Romsdal  4   4
+17              county        Nordland 14  14
+18              county            Oslo  2   2
+19              county         Østfold  6   6
+20              county        Rogaland 15  15
+21              county        Telemark  1   1
+22              county           Troms  5   5
+23              county       Trøndelag  7   7
+24              county        Vestfold  2   2
+25              county        Vestland  6   6
+26       aadt_category            High  2   2
+27       aadt_category             Low 50  50
+28       aadt_category          Medium 35  35
+29       aadt_category        Very Low 13  13
+
+$n_selected
+[1] 100
+
+$parameters
+$parameters$r
+[1] 100
+
+$parameters$k
+[1] 100
+
+$parameters$hops
+[1] 3
+
+$parameters$weighting_vars
+$parameters$weighting_vars$functionClass
+       A        B        C        D        E  unknown     <NA> 
+1.224745 1.183216 1.140175 1.095445 1.048809 1.000000 0.000000 
+
+
+$parameters$weighting_vars_alpha
+NULL
+
+$parameters$neighbourhood_decay
+[1] 1.000 0.500 0.250 0.125
+
+$parameters$neighbour_hops
+[1] 2
+
+$parameters$bundle_scoring
+[1] FALSE
+
+$parameters$filtering
+NULL
+
+
+$enables_derivable_count
+[1] 38
+
+$total_derivable_links_enabled
+[1] 0
+
+> norway_fc_sqrt5to1$summary$counts_table
+             covariate           level  n pct
+1  functionalRoadClass               0 76  76
+2  functionalRoadClass               1 15  15
+3  functionalRoadClass               2  4   4
+4  functionalRoadClass               3  3   3
+5  functionalRoadClass               4  2   2
+6        functionClass               A 95  95
+7        functionClass               B  5   5
+8         roadCategory       EUROPAVEG 73  73
+9         roadCategory       FYLKESVEG  5   5
+10        roadCategory         RIKSVEG 22  22
+11              county           Agder  6   6
+12              county        Akershus  4   4
+13              county        Buskerud  7   7
+14              county        Finnmark  8   8
+15              county       Innlandet 13  13
+16              county Møre og Romsdal  4   4
+17              county        Nordland 14  14
+18              county            Oslo  2   2
+19              county         Østfold  6   6
+20              county        Rogaland 15  15
+21              county        Telemark  1   1
+22              county           Troms  5   5
+23              county       Trøndelag  7   7
+24              county        Vestfold  2   2
+25              county        Vestland  6   6
+26       aadt_category            High  2   2
+27       aadt_category             Low 50  50
+28       aadt_category          Medium 35  35
+29       aadt_category        Very Low 13  13
+> trondelag_fc_sqrt5to1$summary
+$counts_table
+             covariate     level  n pct
+1  functionalRoadClass         0 16  80
+2  functionalRoadClass         2  2  10
+3  functionalRoadClass         3  2  10
+4        functionClass         A 18  90
+5        functionClass         B  2  10
+6         roadCategory EUROPAVEG 16  80
+7         roadCategory FYLKESVEG  2  10
+8         roadCategory   RIKSVEG  2  10
+9               county Trøndelag 20 100
+10       aadt_category       Low 11  55
+11       aadt_category    Medium  3  15
+12       aadt_category  Very Low  6  30
+
+$n_selected
+[1] 20
+
+$parameters
+$parameters$r
+[1] 20
+
+$parameters$k
+[1] 20
+
+$parameters$hops
+[1] 3
+
+$parameters$weighting_vars
+$parameters$weighting_vars$functionClass
+       A        B        C        D        E  unknown     <NA> 
+1.224745 1.183216 1.140175 1.095445 1.048809 1.000000 0.000000 
+
+
+$parameters$weighting_vars_alpha
+NULL
+
+$parameters$neighbourhood_decay
+[1] 1.000 0.500 0.250 0.125
+
+$parameters$neighbour_hops
+[1] 2
+
+$parameters$bundle_scoring
+[1] FALSE
+
+$parameters$filtering
+$parameters$filtering$county
+[1] "Trøndelag"
+
+
+
+$enables_derivable_count
+[1] 6
+
+$total_derivable_links_enabled
+[1] 0
+
+> trondelag_fc_sqrt5to1$summary$counts_table
+             covariate     level  n pct
+1  functionalRoadClass         0 16  80
+2  functionalRoadClass         2  2  10
+3  functionalRoadClass         3  2  10
+4        functionClass         A 18  90
+5        functionClass         B  2  10
+6         roadCategory EUROPAVEG 16  80
+7         roadCategory FYLKESVEG  2  10
+8         roadCategory   RIKSVEG  2  10
+9               county Trøndelag 20 100
+10       aadt_category       Low 11  55
+11       aadt_category    Medium  3  15
+12       aadt_category  Very Low  6  30
+> norway_fc_sqrt5to1_aadt_heavy$summary
+$counts_table
+             covariate           level  n pct
+1  functionalRoadClass               0 79  79
+2  functionalRoadClass               1 13  13
+3  functionalRoadClass               2  3   3
+4  functionalRoadClass               3  4   4
+5  functionalRoadClass               4  1   1
+6        functionClass               A 95  95
+7        functionClass               B  5   5
+8         roadCategory       EUROPAVEG 77  77
+9         roadCategory       FYLKESVEG  5   5
+10        roadCategory         RIKSVEG 18  18
+11              county           Agder  6   6
+12              county        Akershus  2   2
+13              county        Buskerud  7   7
+14              county        Finnmark 16  16
+15              county       Innlandet 13  13
+16              county Møre og Romsdal  4   4
+17              county        Nordland 10  10
+18              county         Østfold  6   6
+19              county        Rogaland 15  15
+20              county        Telemark  1   1
+21              county           Troms  4   4
+22              county       Trøndelag  7   7
+23              county        Vestfold  2   2
+24              county        Vestland  7   7
+25       aadt_category            High  8   8
+26       aadt_category             Low 44  44
+27       aadt_category          Medium 44  44
+28       aadt_category       Very High  1   1
+29       aadt_category        Very Low  3   3
+
+$n_selected
+[1] 100
+
+$parameters
+$parameters$r
+[1] 100
+
+$parameters$k
+[1] 100
+
+$parameters$hops
+[1] 3
+
+$parameters$weighting_vars
+$parameters$weighting_vars$functionClass
+       A        B        C        D        E  unknown     <NA> 
+1.224745 1.183216 1.140175 1.095445 1.048809 1.000000 0.000000 
+
+$parameters$weighting_vars$inla_pred
+[1] "log_proportional"
+
+$parameters$weighting_vars$lastYearAadt_heavyRatio
+[1] "identity"
+
+
+$parameters$weighting_vars_alpha
+[1] 0.70 0.25 0.05
+
+$parameters$neighbourhood_decay
+[1] 1.000 0.500 0.250 0.125
+
+$parameters$neighbour_hops
+[1] 2
+
+$parameters$bundle_scoring
+[1] FALSE
+
+$parameters$filtering
+NULL
+
+
+$enables_derivable_count
+[1] 43
+
+$total_derivable_links_enabled
+[1] 0
+
+> norway_fc_sqrt5to1_aadt_heavy$summary$counts_table
+             covariate           level  n pct
+1  functionalRoadClass               0 79  79
+2  functionalRoadClass               1 13  13
+3  functionalRoadClass               2  3   3
+4  functionalRoadClass               3  4   4
+5  functionalRoadClass               4  1   1
+6        functionClass               A 95  95
+7        functionClass               B  5   5
+8         roadCategory       EUROPAVEG 77  77
+9         roadCategory       FYLKESVEG  5   5
+10        roadCategory         RIKSVEG 18  18
+11              county           Agder  6   6
+12              county        Akershus  2   2
+13              county        Buskerud  7   7
+14              county        Finnmark 16  16
+15              county       Innlandet 13  13
+16              county Møre og Romsdal  4   4
+17              county        Nordland 10  10
+18              county         Østfold  6   6
+19              county        Rogaland 15  15
+20              county        Telemark  1   1
+21              county           Troms  4   4
+22              county       Trøndelag  7   7
+23              county        Vestfold  2   2
+24              county        Vestland  7   7
+25       aadt_category            High  8   8
+26       aadt_category             Low 44  44
+27       aadt_category          Medium 44  44
+28       aadt_category       Very High  1   1
+29       aadt_category        Very Low  3   3
+> trondelag_fc_sqrt5to1_aadt_heavy$summary
+$counts_table
+             covariate     level  n pct
+1  functionalRoadClass         0 15  75
+2  functionalRoadClass         2  2  10
+3  functionalRoadClass         3  3  15
+4        functionClass         A 17  85
+5        functionClass         B  2  10
+6        functionClass         C  1   5
+7         roadCategory EUROPAVEG 15  75
+8         roadCategory FYLKESVEG  3  15
+9         roadCategory   RIKSVEG  2  10
+10              county Trøndelag 20 100
+11       aadt_category       Low 11  55
+12       aadt_category    Medium  3  15
+13       aadt_category  Very Low  6  30
+
+$n_selected
+[1] 20
+
+$parameters
+$parameters$r
+[1] 20
+
+$parameters$k
+[1] 20
+
+$parameters$hops
+[1] 3
+
+$parameters$weighting_vars
+$parameters$weighting_vars$functionClass
+       A        B        C        D        E  unknown     <NA> 
+1.224745 1.183216 1.140175 1.095445 1.048809 1.000000 0.000000 
+
+$parameters$weighting_vars$inla_pred
+[1] "log_proportional"
+
+$parameters$weighting_vars$lastYearAadt_heavyRatio
+[1] "identity"
+
+
+$parameters$weighting_vars_alpha
+[1] 0.70 0.25 0.05
+
+$parameters$neighbourhood_decay
+[1] 1.000 0.500 0.250 0.125
+
+$parameters$neighbour_hops
+[1] 2
+
+$parameters$bundle_scoring
+[1] FALSE
+
+$parameters$filtering
+$parameters$filtering$county
+[1] "Trøndelag"
+
+
+
+$enables_derivable_count
+[1] 5
+
+$total_derivable_links_enabled
+[1] 0
+
+> trondelag_fc_sqrt5to1_aadt_heavy$summary$counts_table
+             covariate     level  n pct
+1  functionalRoadClass         0 15  75
+2  functionalRoadClass         2  2  10
+3  functionalRoadClass         3  3  15
+4        functionClass         A 17  85
+5        functionClass         B  2  10
+6        functionClass         C  1   5
+7         roadCategory EUROPAVEG 15  75
+8         roadCategory FYLKESVEG  3  15
+9         roadCategory   RIKSVEG  2  10
+10              county Trøndelag 20 100
+11       aadt_category       Low 11  55
+12       aadt_category    Medium  3  15
+13       aadt_category  Very Low  6  30
+> 

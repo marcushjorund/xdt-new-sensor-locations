@@ -1,0 +1,148 @@
+---
+title: "INLA Modelling Functions"
+output: html_document
+---
+
+# INLA Modelling Functions
+
+Functions defined in `R/inla-modeling.R`.
+
+---
+
+## `fit_weighted_inla_model()`
+
+Fits a Besag-proper CAR spatial model via INLA. When `spatial_term = "besagproper_rbf"`,
+the spatial precision matrix is additionally weighted by an RBF/Laplacian kernel over
+pairwise Gower distance between adjacent links' road attributes.
+
+```r
+fit_weighted_inla_model(
+  data,
+  adjacency_matrix,
+  spatial_term          = "besagproper_rbf",
+  similarity_covariates = NULL,
+  ordinal_levels        = list(),
+  distance_type         = "gower",
+  weight_fn             = "laplacian",
+  fixed_effects         = ~ 1,
+  iid_effects           = "roadSystem",
+  heavy_vehicle         = FALSE,
+  family                = "gaussian",
+  extraconstr           = NULL,
+  verbose               = FALSE
+)
+```
+
+### Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `data` | data frame | Prepared traffic links; must have `id` and the response column (`aadt`/`heavyAadt`) |
+| `adjacency_matrix` | sparse matrix | Square n×n adjacency of traffic links |
+| `spatial_term` | character | `"besagproper_rbf"` (default) or `"besagproper"` |
+| `similarity_covariates` | character vector | Column names used to compute Gower distances; uses defaults if `NULL` |
+| `ordinal_levels` | named list | Ordered factor levels for ordinal covariates |
+| `distance_type` | character | `"gower"` or `"gower_squared"` |
+| `weight_fn` | character | `"laplacian"`, `"gaussian"`, or `"linear"` |
+| `fixed_effects` | formula | Fixed-effects formula passed to INLA |
+| `iid_effects` | character vector or NULL | Column(s) for IID random effects |
+| `heavy_vehicle` | logical | If `TRUE`, model `heavyAadt` instead of `aadt` |
+| `family` | character | `"gaussian"`, `"poisson"`, or `"nbinomial"` |
+| `extraconstr` | list or NULL | Flow-conservation constraint `list(A = <m x n matrix>, e = <m vector>)` |
+| `verbose` | logical | INLA verbosity |
+
+### Returns
+
+A `weighted_inla_traffic_model` object (list): `predictions` (data frame with `id`,
+`inla_pred[_heavy]`, `inla_sd[_heavy]`), `model_summary`, `spatial_hyperpar` (natural-scale
+`tau`/`d`/`sigma`), `distances` (edge Gower distances — feed into
+`create_covariance_and_precision_matrix()`), `inla_model`, `formula`, `family`,
+`spatial_term`, `similarity_covariates`, `ordinal_levels`.
+
+---
+
+## `kfold_cv_inla()`
+
+k-fold cross-validation for `fit_weighted_inla_model()`. Evaluates out-of-sample predictive
+performance by repeatedly holding out folds of measured links.
+
+```r
+kfold_cv_inla(
+  data,
+  adjacency_matrix,
+  k                     = 5,
+  seed                  = 42,
+  fixed_effects         = ~ 1,
+  spatial_term          = "besagproper_rbf",
+  similarity_covariates = NULL,
+  ordinal_levels        = list(),
+  iid_effects           = "roadSystem",
+  family                = "gaussian",
+  heavy_vehicle         = FALSE,
+  verbose               = FALSE,
+  weight_fn             = "laplacian",
+  distance_type         = "gower"
+)
+```
+
+### Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `k` | integer | Number of CV folds |
+| `seed` | integer | RNG seed for fold assignment |
+
+All other parameters are passed directly to `fit_weighted_inla_model()`.
+
+### Returns
+
+An `inla_kfold_cv` object (list): `fold_metrics` (RMSE/MAE/MAPE/MALE per fold),
+`summary_metrics` (mean ± SD across folds), `oof_predictions` (one row per held-out link),
+`k`, `seed`, `family`, `spatial_term`.
+
+---
+
+## `select_similarity_covariates()`
+
+Greedy forward selection of `similarity_covariates` for the RBF kernel: starts from an
+empty set and repeatedly adds the candidate that most reduces mean CV-RMSE, using
+`kfold_cv_inla()` internally. Ordinal levels are automatically subsetted to the active
+covariate set at each step. Stops when no addition improves performance.
+
+```r
+select_similarity_covariates(
+  data,
+  adjacency_matrix,
+  candidate_covariates = c("maxLanes", "minLanes", "highestSpeedLimit",
+                            "lowestSpeedLimit", "isRamp", "roadCategory",
+                            "functionClass", "functionalRoadClass",
+                            "roadSystem", "lastYearAadt_logAadt"),
+  ordinal_levels        = list(
+    functionalRoadClass = as.character(c(7, 6, 5, 4, 3, 2, 1, 0)),
+    roadCategory        = c("KOMMUNAL_VEG", "FYLKESVEG", "RIKSVEG", "EUROPAVEG"),
+    functionClass       = c("unknown", "E", "D", "C", "B", "A"),
+    highestSpeedLimit   = c("unknown", "30", "40", "50", "60", "70", "80", "90", "100", "110"),
+    lowestSpeedLimit    = c("unknown", "20", "30", "40", "50", "60", "70", "80", "90", "100")
+  ),
+  fixed_effects = ~ functionalRoadClass:maxLanes +
+    functionalRoadClass:roadCategory +
+    minLanes:roadCategory + functionalRoadClass +
+    maxLanes + roadCategory +
+    hasOnlyPublicTransportLanes +
+    functionalRoadClass * isRamp +
+    lastYearAadt_logAadt,
+  iid_effects   = "roadSystem",
+  family        = "nbinomial",
+  distance_type = "gower",
+  weight_fn     = "laplacian",
+  k             = 10,
+  seed          = 420,
+  verbose       = FALSE
+)
+```
+
+### Returns
+
+A list (invisible): `best_covariates` (character vector to pass as `similarity_covariates`
+in `fit_weighted_inla_model()`), `best_ordinal_levels`, `best_male`, `selection_history`
+(data frame logging each forward-selection step).

@@ -1,0 +1,144 @@
+---
+title: "Pipeline Overview"
+output: html_document
+---
+
+# Norway AADT Sensor Placement — Pipeline Overview
+
+This document describes the full two-stage pipeline for selecting new traffic sensor locations
+that maximally reduce prediction uncertainty on unmeasured road links.
+
+## Goal
+
+Given a road network where only a subset of links have measured AADT (Annual Average Daily Traffic),
+select k new sensor locations such that placing sensors there reduces posterior uncertainty as much
+as possible across all unmeasured links.
+
+---
+
+## Stage 1 — Spatial Prediction with INLA
+
+The first stage fits a Besag-proper RBF spatial model via INLA to produce posterior predictions
+on all links, including unmeasured ones.
+
+### Data preparation
+
+Traffic links are loaded from `data/prepared_traffic_links_norway.rds`. Each row is a directed
+link (suffixed `-WITH` or `-AGAINST`). Key columns:
+
+| Column | Description |
+|--------|-------------|
+| `aadt` | Measured count; `NA` for unmeasured links |
+| `functionalRoadClass` | Road class (0 = motorway, 7 = local) |
+| `roadCategory` | Administrative category |
+| `lastYearAadt_logAadt` | Log of prior-year AADT (continuous covariate) |
+| `spatial.idx` | Integer index 1:n for the spatial effect |
+
+### Model fitting
+
+```r
+model <- fit_inla_rbf_model(
+  data               = prepared_traffic_links,
+  adjacency_matrix   = adjacency_matrix,
+  spatial_term       = "besagproper_rbf",
+  similarity_covariates = selected_covariates,
+  fixed_effects      = covariates,
+  iid_effects        = "roadSystem",
+  family             = "nbinomial"
+)
+```
+
+The RBF (radial basis function) kernel weights the spatial precision matrix by link similarity.
+Hyperparameters `tau`, `d`, `sigma` are estimated from data. Posterior means are stored in
+`inla_pred` on the data frame.
+
+See `docs/functions/inla-modeling.Rmd` for full function reference.
+
+---
+
+## Stage 2 — Greedy Mutual Information Sensor Selection
+
+The second stage uses the posterior covariance structure from Stage 1 to greedily select
+sensor locations maximizing mutual information (MI) gain (Krause et al. 2008).
+
+### Flow conservation pre-processing
+
+Before selection, links that can be derived from flow conservation equations are identified
+and excluded from the candidate set:
+
+```r
+data_with_derivable <- identify_derivable_nodes(
+  data             = prepared_traffic_links,
+  nodes            = traffic_nodes,
+  adjacency_matrix = adjacency_matrix
+)
+```
+
+See `docs/functions/flow-conservation.Rmd`.
+
+### Covariance matrix construction
+
+```r
+cov_result <- create_covariance_and_precision_matrix(
+  adjacency_matrix = adjacency_matrix,
+  tau = model$tau, d = model$d, sigma = model$sigma,
+  distances        = model$distances,
+  data             = prepared_traffic_links,
+  with_and_against = TRUE
+)
+```
+
+The `with_and_against = TRUE` flag applies the C·Σ·Cᵀ transformation to aggregate
+directional link uncertainties to road-level (since sensors measure both directions).
+
+### Greedy selection
+
+```r
+result <- greedy_mi_sensor_selection_norway(
+  data              = data_with_derivable,
+  covariance_matrix = cov_result$covariance_matrix_sum,
+  ids               = cov_result$ids,
+  k_per_county      = 100,
+  r                 = 100,
+  weighting_bias    = c(1, 1, 0.9, 0.7, 0.5, 0.3, 0.1, 0),
+  frc_aadt_alpha    = 0.9,
+  neighbourhood_decay = c(1, 0.5, 0.1)
+)
+```
+
+See `docs/functions/sensor-selection.Rmd` for full parameter reference.
+
+---
+
+## Output
+
+Results are saved as `.rds` files in `results/production/`:
+
+```r
+saveRDS(result, "results/production/frc_sqrt(0.9_to_0)_100percounty_100overall.rds")
+```
+
+Each file contains:
+
+```r
+list(
+  selected_data_entries = <sf data frame>,   # selected links with mi_score
+  summary = list(
+    n_selected   = integer,
+    k_per_county = integer,
+    r            = integer,
+    counts_table = data.frame               # per-county breakdown
+  )
+)
+```
+
+Results are visualised in the Shiny app (`shiny/app.R`). See the deploy rule in
+`.github/instructions/shiny.instructions.md` before adding new results.
+
+---
+
+## Main Pipeline Script
+
+`serious-testing/testing-sensor-selection-norway.R` is the entry point. Run it top-to-bottom
+to reproduce all results. It sources `serious-testing/scripts_inla_sensor_placement.R` which
+contains all 19 core functions.

@@ -1,0 +1,152 @@
+---
+title: "Diagnostics & Plotting Functions"
+output: html_document
+---
+
+# Diagnostics & Plotting Functions
+
+Functions defined in `R/diagnostics.R`.
+
+---
+
+## `plot_inla_model()`
+
+Diagnostic plot for a fitted `weighted_inla_traffic_model` (from
+`fit_weighted_inla_model()`): predicted-vs-observed, residuals-vs-fitted, Q-Q, or a
+residual histogram, each annotated with RMSE/MAE/MAPE/MALE.
+
+```r
+plot_inla_model(
+  model,
+  observed,
+  test_idx = NULL,
+  type     = c("pred_vs_obs", "residuals_vs_fitted", "qq", "residuals_hist"),
+  title    = NULL,
+  col      = "#0066CC",
+  x_label  = NULL,
+  y_label  = NULL,
+  ylim     = NULL
+)
+```
+
+### Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `model` | `weighted_inla_traffic_model` | Object returned by `fit_weighted_inla_model()` |
+| `observed` | numeric vector | True AADT values, full-length, same row order as the data passed to `fit_weighted_inla_model()` |
+| `test_idx` | integer vector or NULL | Optional subset (e.g. held-out test rows) to restrict the plot to |
+| `type` | character | `"pred_vs_obs"` (default), `"residuals_vs_fitted"`, `"qq"`, or `"residuals_hist"` |
+| `title` | character or NULL | Auto-generated from `model$family`/`model$spatial_term` if `NULL` |
+| `col` | character | Hex colour for points (default `"#0066CC"`) |
+| `x_label`, `y_label` | character or NULL | Override axis labels |
+| `ylim` | numeric length-2 or NULL | Restrict y-axis range |
+
+### Returns
+
+A `ggplot` object, printed automatically and also returned invisibly.
+
+---
+
+## `plot_kfold_cv()`
+
+Diagnostic plots for a `kfold_cv_inla()` result: predicted-vs-observed (coloured and
+labelled by fold with per-fold metrics), residuals-vs-fitted, Q-Q, residual histogram, or a
+per-fold RMSE/MAE/MAPE/MALE bar chart faceted by metric.
+
+```r
+plot_kfold_cv(
+  cv_result,
+  type = c("pred_vs_obs", "residuals_vs_fitted", "qq",
+           "residuals_hist", "metrics_by_fold")
+)
+```
+
+### Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `cv_result` | `inla_kfold_cv` | Object returned by `kfold_cv_inla()` |
+| `type` | character | `"pred_vs_obs"` (default), `"residuals_vs_fitted"`, `"qq"`, `"residuals_hist"`, or `"metrics_by_fold"` |
+
+### Returns
+
+A `ggplot` object, printed automatically and also returned invisibly.
+
+---
+
+## `plot_sensor_selection_map()`
+
+Interactive `leaflet` map of a sensor-selection result. Draws selected sensors (red),
+optional flow-conservation-derived links (orange), 1..H-hop neighbour context links
+(blue, one layer per hop), and — when `all_data` is supplied — a dashed overlay of all
+currently measured links. Numbered, permanently-visible circle markers are placed at the
+midpoint of each selected/derived sensor, ranked by `mi_score` (or by bundle score when
+the input comes from `greedy_mi_sensor_selection_derivable()`).
+
+```r
+plot_sensor_selection_map(
+  sensor_results,
+  color_selected     = "#E63946",
+  color_neighbour    = "#457B9D",
+  color_derived      = "#F4A261",
+  weight_selected    = 6,
+  weight_neighbour   = 3,
+  opacity_selected   = 0.95,
+  opacity_neighbour  = 0.7,
+  all_data           = NULL,
+  color_measured     = "#FF00FF"
+)
+```
+
+### Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `sensor_results` | list or data frame | List from `greedy_mi_sensor_selection_norway()` (must contain `$selected_data_entries`), or that data frame directly |
+| `color_selected` | character | Hex colour for selected sensor links (default `"#E63946"`) |
+| `color_neighbour` | character | Hex colour for neighbour context links (default `"#457B9D"`) |
+| `color_derived` | character | Hex colour for flow-conservation-derived links (default `"#F4A261"`) |
+| `weight_selected`, `weight_neighbour` | numeric | Polyline weights (default 6 / 3) |
+| `opacity_selected`, `opacity_neighbour` | numeric | Polyline opacities (default 0.95 / 0.7) |
+| `all_data` | data frame or NULL | Full traffic links data frame; when supplied, adds a dashed overlay of all measured links (layer "Målte trafikklenker") |
+| `color_measured` | character | Hex colour for the measured-links dash overlay (default `"#FF00FF"`) |
+
+### Returns
+
+A `leaflet` map object with toggleable layer groups and a legend.
+
+---
+
+## `map_traffic_links()`
+
+General-purpose interactive `leaflet` map of any traffic-links data frame, colouring by an
+arbitrary `color_by` column (categorical → `colorFactor`/`"Set1"`, numeric →
+`colorNumeric`/`"viridis"`). Popup content mirrors `xdtkit::plot_traffic_links_map`
+(link ID, predicted AADT/SD — preferring `balanced_pred`/`balanced_sd` over
+`inla_pred`/`inla_sd` when present, relative uncertainty, measured AADT + source,
+last-year AADT), with any missing fields silently omitted.
+
+```r
+map_traffic_links(
+  data,
+  color_by,
+  title   = color_by,
+  weight  = 2,
+  opacity = 0.9
+)
+```
+
+### Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `data` | data frame | Must have an `id` column compatible with `add_geometries()` |
+| `color_by` | character | Column name used for colouring links |
+| `title` | character | Legend title (defaults to `color_by`) |
+| `weight` | numeric | Polyline weight (default 2) |
+| `opacity` | numeric | Polyline opacity (default 0.9) |
+
+### Returns
+
+A `leaflet` map object.

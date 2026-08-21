@@ -1,0 +1,26 @@
+---
+title: "Nye trafikkregistreringspunkter Nordland fylke"
+author: "Marcus Hjørund"
+date: "2026-06-02"
+output: html_document
+---
+# Nye trafikkregistreringspunkter Nordland fylke
+
+```{r setup, include=FALSE}
+library(xdtkit)
+library(sf)
+library(leaflet)
+library(here)
+source(here::here("R", "scripts_inla_sensor_placement.R"))
+```
+
+## Resultater
+
+I dette dokumentet viser vi anbefalte topp 15 punkter for fylkesveinettet i Nordland. Her har 60% av vekten blitt lagt på funksjonell vegklasse, 35% på ÅDT og 5% på tungbilandel. Dette er er skalert med avstanden til eksisterende sensorer og usikkerhet. 
+
+```{r, include = TRUE, echo = FALSE, out.width = "95%"}
+nordland_sensors <- readRDS(here::here("results/analysis/norway_sensors_15_nordland_fylkes_1.rds"))
+nordland_data   <- readRDS(here::here("data/prepared_traffic_links_nordland.rds"))
+plot_sensor_selection_map(nordland_sensors, all_data = nordland_data)
+```
+

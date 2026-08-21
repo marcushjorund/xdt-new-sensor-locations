@@ -1,0 +1,204 @@
+---
+title: "Sensor Selection Functions"
+output: html_document
+---
+
+# Sensor Selection Functions
+
+Functions defined in `R/sensor-selection.R`.
+
+---
+
+## `compute_weights()`
+
+Computes the combined location-importance weight vector used by both
+`greedy_mi_sensor_selection()` and `greedy_mi_sensor_selection_derivable()`. Supports named
+lookup tables (e.g. by `functionalRoadClass` level), `"proportional"`/`"log_proportional"`
+scaling of a numeric column, or a uniform default. Multiple weighting variables are
+min-max normalised then combined via `weighting_vars_alpha` mixing weights.
+
+```r
+compute_weights(data, weighting_vars, weighting_vars_alpha = NULL, row_lookup = NULL)
+```
+
+### Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `data` | data frame | Traffic links data frame |
+| `weighting_vars` | named list or NULL | Each element is a named numeric lookup vector, `"proportional"`, `"log_proportional"`, or `"identity"`. `NULL` = uniform weights |
+| `weighting_vars_alpha` | numeric vector or NULL | Mixing weights (normalised to sum 1) across `weighting_vars` entries |
+| `row_lookup` | integer vector or NULL | Optional row subset of `data`; `NULL` = all rows |
+
+### Returns
+
+Numeric weight vector, length = `length(row_lookup)` (or `nrow(data)`), floored at `1e-8`.
+
+---
+
+## `compute_neighbourhood_weight()`
+
+Computes dynamic neighbourhood-smoothed weights for the greedy MI loop: each candidate's
+effective weight blends its own base weight with the mean/sum of its 1..H-hop neighbours'
+weights in the *residual* graph (already-measured/selected nodes are blocked as bridges,
+enforcing the CAR model's Markov conditional-independence property).
+
+```r
+compute_neighbourhood_weight(w_base, A1, decay,
+                              exclude_idx           = integer(0),
+                              neighbourhood_scoring = c("mean", "log_proportional", "proportional", "sum"),
+                              neigh_baselines       = NULL)
+```
+
+### Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `w_base` | numeric vector | Base weights from `compute_weights()` |
+| `A1` | sparse matrix | Binary 1-hop base-space adjacency (diagonal 0) |
+| `decay` | numeric vector `c(f0,...,fH)` | Non-negative hop weights; normalised to sum 1 |
+| `exclude_idx` | integer vector | Locations to exclude from neighbour sums / block as bridges |
+| `neighbourhood_scoring` | character | `"mean"` (default), `"sum"`, `"proportional"`, or `"log_proportional"` |
+| `neigh_baselines` | numeric vector or NULL | Per-hop baselines for proportional scoring |
+
+### Returns
+
+Numeric vector of effective weights, same length as `w_base`, floored at `1e-8`.
+
+---
+
+## `greedy_mi_sensor_selection()`
+
+Greedily selects `k` unmeasured locations maximising mutual information (Krause et al.
+2008), using incremental Cholesky updates for the conditional variance of selected sensors
+and Schur-complement updates for remaining candidates.
+
+```r
+greedy_mi_sensor_selection(
+  data, covariance_matrix, ids, k,
+  adjacency_matrix      = NULL,
+  weighting_vars        = NULL,
+  weighting_vars_alpha  = NULL,
+  neighbourhood_decay   = NULL,
+  neighbourhood_scoring = "mean",
+  append_neighbours     = TRUE,
+  eligible_ids          = NULL
+)
+```
+
+### Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `data` | data frame | Traffic links; `NA` in `aadt` marks unmeasured links |
+| `covariance_matrix` | matrix | m×m covariance (m = `length(ids)`), from `create_covariance_and_precision_matrix(with_and_against = TRUE)` |
+| `ids` | character vector | Base road IDs matching rows/cols of `covariance_matrix` |
+| `k` | integer | Number of sensors to select |
+| `adjacency_matrix` | sparse matrix or NULL | Required for `neighbourhood_decay` and `append_neighbours` |
+| `weighting_vars` | named list or NULL | Forwarded to `compute_weights()` |
+| `weighting_vars_alpha` | numeric vector or NULL | Forwarded to `compute_weights()` |
+| `neighbourhood_decay` | numeric vector or NULL | Forwarded to `compute_neighbourhood_weight()` |
+| `neighbourhood_scoring` | character | Forwarded to `compute_neighbourhood_weight()` |
+| `append_neighbours` | logical | Append 1-hop neighbours of selected sensors to output |
+| `eligible_ids` | character vector or NULL | Restrict candidates to a subset of `ids` |
+
+### MI score formula
+
+At each greedy iteration, candidate *s*'s score is:
+
+$$\text{score}[s] = \frac{\text{cond\_var1}[s]}{\text{cond\_var2}[s]} \times w[s]$$
+
+- `cond_var1[s]`: variance of *s* given already-selected sensors + initially measured links
+- `cond_var2[s]`: variance of *s* given all other currently unmeasured candidates
+- `w[s]`: neighbourhood-smoothed weight from `compute_neighbourhood_weight()` (or `w_base` if `neighbourhood_decay = NULL`)
+
+### Returns
+
+List: `selected_ids`, `selected_idx`, `selected_data_entries` (WITH + AGAINST rows with
+`selected`/`mi_score` columns, plus neighbour rows when `append_neighbours = TRUE`),
+`mi_scores`, `measured_idx`, `unmeasured_idx_initial`.
+
+---
+
+## `greedy_mi_sensor_selection_norway()`
+
+Partitions the nationwide dataset by county (via `partition_by_county()`, widened by `hops`
+adjacency steps across borders), builds the covariance per partition, and runs greedy MI
+selection independently per county. Deduplicates border links (kept by highest `mi_score`),
+optionally prunes to the top-`r` locations nationwide, and can append multi-hop adjacency
+neighbours for plotting.
+
+```r
+greedy_mi_sensor_selection_norway(
+  data, adjacency_matrix, distances, tau, d, sigma,
+  hops                  = 2,
+  k                     = 10,
+  r                     = NULL,
+  weighting_vars        = NULL,
+  weighting_vars_alpha  = NULL,
+  neighbourhood_decay   = NULL,
+  neighbourhood_scoring = "mean",
+  neighbour_hops        = 0L,
+  bundle_scoring        = FALSE,
+  filtering             = NULL,
+  verbose               = FALSE
+)
+```
+
+### Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `data` | data frame | Must have a `county` factor column; needs `enables_derivable_links` when `bundle_scoring = TRUE` |
+| `adjacency_matrix` | sparse matrix | Nationwide n×n adjacency |
+| `distances` | numeric vector | Edge Gower distances, from `fit_weighted_inla_model()$distances` |
+| `tau, d, sigma` | numeric | CAR hyperparameters (natural scale) |
+| `hops` | integer | Border-expansion hops for `partition_by_county()` (default 2) |
+| `k` | integer | Sensors (or bundles) selected per county (default 10) |
+| `r` | integer or NULL | If set, retain only the top-`r` sensors/bundles nationwide |
+| `weighting_vars`, `weighting_vars_alpha` | — | Forwarded to `compute_weights()` |
+| `neighbourhood_decay`, `neighbourhood_scoring` | — | Forwarded to `compute_neighbourhood_weight()` |
+| `neighbour_hops` | integer | Context hops appended for plotting (default 0) |
+| `bundle_scoring` | logical | `FALSE` (default) = standard m×m WITH+AGAINST mode via `greedy_mi_sensor_selection()`; `TRUE` = n×n bundle mode via `greedy_mi_sensor_selection_derivable()` |
+| `filtering` | named list or NULL | e.g. `list(county = "Nordland", roadCategory = "FYLKESVEG")` restricts eligible candidates |
+| `verbose` | logical | — |
+
+### Returns
+
+List: `selected_data_entries`, `n_counties`, `k_per_county`, `r`, `summary` (from
+`summarise_sensor_selection()`), `mi_scores` (named vector, one entry per physical sensor).
+
+---
+
+## `greedy_mi_sensor_selection_derivable()`
+
+Bundle-scoring variant of `greedy_mi_sensor_selection()`. Operates on the **full n×n
+directed-link covariance** (no WITH+AGAINST summing). Each candidate sensor's score is the
+sum of sequential MI gains from every link that becomes known when it is placed: its own
+WITH direction, its AGAINST direction (if unmeasured), and any links unlocked via flow
+conservation (`enables_derivable_links` from `identify_derivable_nodes()`).
+
+```r
+greedy_mi_sensor_selection_derivable(
+  data, covariance_matrix, k,
+  adjacency_matrix      = NULL,
+  weighting_vars        = NULL,
+  weighting_vars_alpha  = NULL,
+  neighbourhood_decay   = NULL,
+  neighbourhood_scoring = "mean",
+  append_neighbours     = TRUE
+)
+```
+
+### Score formula
+
+$$\text{score}(b) = \text{bundle\_MI}(b) \times \text{effective\_w}(b)$$
+
+- `bundle_MI(b) = Σ_j (cond_var1[j|prev] / cond_var2[j])`, computed sequentially over the bundle's links
+- `effective_w(b) = f0·mean_w(bundle) + f1·mean_w(hop1) + f2·mean_w(hop2) + ...`, with `f` normalised from `neighbourhood_decay`
+
+### Returns
+
+List mirroring `greedy_mi_sensor_selection()`: `selected_base_ids`, `selected_data_entries`
+(with `bundle_size`, `n_derivable_gained`, `derived_links` list-column, `selection_order`),
+`mi_scores`, `bundle_details`, `measured_idx`, `unmeasured_idx_initial`.

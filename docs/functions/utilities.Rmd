@@ -1,0 +1,126 @@
+---
+title: "Utility Functions"
+output: html_document
+---
+
+# Utility Functions
+
+Helper functions defined in `R/utilities.R`.
+
+Note: `plot_sensor_selection_map()` and `map_traffic_links()` moved to `R/diagnostics.R` and
+are documented in [diagnostics.Rmd](diagnostics.Rmd).
+
+---
+
+## `expand_border()`
+
+Repeatedly grows a seed set of link indices outward by `hops` adjacency steps and returns
+only the newly reached border indices. Used by `partition_by_county()` to widen each county
+partition across its borders.
+
+```r
+expand_border(seed_idx, adjacency_matrix, hops = 2)
+```
+
+### Returns
+
+Integer vector of border indices reached within `hops` steps (seed indices excluded).
+
+---
+
+## `partition_by_county()`
+
+Partitions a nationwide traffic-link dataset into per-county sub-datasets, each widened by
+`hops` adjacency-matrix steps across county borders (via `expand_border()`), so
+county-level sensor selection has spatial context beyond the county boundary.
+
+```r
+partition_by_county(data, adjacency_matrix, distances, hops = 2)
+```
+
+### Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `data` | data frame | Must have a `county` factor column |
+| `adjacency_matrix` | sparse matrix | Square, matching `nrow(data)` |
+| `distances` | numeric vector | Edge distances (upper-triangle order), from `fit_weighted_inla_model()$distances` |
+| `hops` | integer | Hops to expand beyond the county boundary (default 2) |
+
+### Returns
+
+Named list (one element per county level), each with `$data`, `$adjacency_matrix`,
+`$distances`, subsetted and reindexed consistently. Core rows are identified by
+`$data$county == county_name`.
+
+---
+
+## `categorise_aadt()`
+
+Categorises raw AADT values into ordered traffic-volume bands.
+
+```r
+categorise_aadt(
+  x,
+  breaks = c(0, 1000, 5000, 15000, 35000, Inf),
+  labels = c("Very Low", "Low", "Medium", "High", "Very High")
+)
+```
+
+### Returns
+
+An ordered factor, same length as `x`.
+
+---
+
+## `summarise_sensor_selection()`
+
+Computes summary statistics for a completed sensor selection: a tidy long data frame with
+one row per covariate-level combination for all selected (non-derived, non-neighbour)
+sensors, plus scalar fields.
+
+```r
+summarise_sensor_selection(
+  selected_data,
+  params      = list(),
+  aadt_breaks = c(0, 1000, 5000, 15000, 35000, Inf),
+  aadt_labels = c("Very Low", "Low", "Medium", "High", "Very High")
+)
+```
+
+### Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `selected_data` | data frame | `selected_data_entries` from a Norway-level sensor-selection wrapper |
+| `params` | named list | Call parameters recorded verbatim in the output |
+| `aadt_breaks`, `aadt_labels` | — | Forwarded to `categorise_aadt()` |
+
+### Returns
+
+List: `counts_table` (long: `covariate`, `level`, `n`, `pct`), `n_selected`, `parameters`,
+`enables_derivable_count` (or `NULL`), `total_derivable_links_enabled` (or `NULL`).
+
+---
+
+## `add_geometries()`
+
+Attaches LineString geometries to a traffic-link data frame by left-joining
+`data/directed_traffic_links_2024_simplified.geojson` (or the non-simplified fallback),
+cached per session. Overrides `xdtkit::add_geometries()`, which uses an incompatible older
+ID scheme.
+
+```r
+add_geometries(
+  traffic_data,
+  id_col       = "id",
+  geojson_path = if (file.exists("data/directed_traffic_links_2024_simplified.geojson"))
+                   "data/directed_traffic_links_2024_simplified.geojson"
+                 else
+                   "data/directed_traffic_links_2024.geojson"
+)
+```
+
+### Returns
+
+An `sf` data frame with LineString geometries attached.

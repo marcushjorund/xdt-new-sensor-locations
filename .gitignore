@@ -39,8 +39,8 @@ vignettes/*.pdf
 # R Environment Variables
 .Renviron
 
-# pkgdown site
-docs/
+# Stray plotting device output from interactive sessions
+Rplots.pdf
 
 # translation temp files
 po/*~
