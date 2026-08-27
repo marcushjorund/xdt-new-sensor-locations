@@ -47,3 +47,5 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+data/directed_traffic_links_2024.geojson
+
